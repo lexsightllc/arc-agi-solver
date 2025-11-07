@@ -7,6 +7,7 @@ import mlflow
 import os
 import json
 from tqdm import tqdm
+from typing import List
 
 from src.core.dsl import DSL, Program
 from src.learning.models import PolicyNet, ValueNet, ProgramPriorModel
