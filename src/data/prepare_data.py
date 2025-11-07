@@ -1,7 +1,7 @@
 import json
 import os
 import argparse
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Tuple
 from src.utils.logging import get_logger
 
 logger = get_logger(__name__)
