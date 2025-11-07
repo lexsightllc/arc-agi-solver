@@ -1,0 +1,44 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.ipynb_checkpoints/
+.vscode/
+
+# Virtual environment
+venv/
+.venv/
+
+# DVC
+.dvc/
+*.dvc
+*.dvcignore
+
+# MLflow
+mlruns/
+
+# Hydra
+outputs/
+.hydra/
+
+# Numba cache
+__pycache__/
+*.numba_cache
+
+# Data
+data/processed/
+data/synthetic/
+
+# Models
+models/
+runs/
+
+# Logs
+logs/
+
+# Docker
+.dockerignore
+
+# Submission files
+submission.json

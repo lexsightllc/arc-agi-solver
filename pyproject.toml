@@ -1,0 +1,54 @@
+[project]
+name = "arc-agi-solver"
+version = "0.1.0"
+description = "A neuro-symbolic program induction system for ARC AGI tasks."
+authors = [{ name = "ARC AGI Team", email = "arc-agi@example.com" }]
+license = { file = "LICENSE" }
+readme = "README.md"
+requires-python = ">=3.9"
+keywords = ["ARC", "AGI", "neuro-symbolic", "program induction", "PyTorch", "Z3"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence"
+]
+dependencies = [
+    "torch>=1.10.0",
+    "numpy>=1.20.0",
+    "numba>=0.55.0",
+    "networkx>=2.6.0",
+    "z3-solver>=4.8.12",
+    "hydra-core>=1.2.0",
+    "mlflow>=1.20.0",
+    "dvc>=2.0.0",
+    "typer>=0.4.0",
+    "pytest>=6.2.0",
+    "hypothesis>=6.0.0",
+    "tqdm>=4.60.0",
+    "scikit-image>=0.18.0",
+    "Pillow>=9.0.0"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/your-org/arc-agi-solver"
+"Bug Tracker" = "https://github.com/your-org/arc-agi-solver/issues"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = "src"
+addopts = "--import-mode=append"
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true

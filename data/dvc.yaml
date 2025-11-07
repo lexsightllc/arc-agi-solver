@@ -1,0 +1,65 @@
+stages:
+  prepare_data:
+    cmd: python src/data/prepare_data.py --raw_path data/raw/arc-dataset --processed_path data/processed
+    deps:
+      - src/data/prepare_data.py
+      - data/raw/arc-dataset
+    outs:
+      - data/processed/train_tasks.json
+      - data/processed/eval_tasks.json
+
+  generate_synthetic_data:
+    cmd: python src/data/generate_synthetic.py --output_path data/synthetic --config_path config/training/curriculum.yaml
+    deps:
+      - src/data/generate_synthetic.py
+      - config/training/curriculum.yaml
+    outs:
+      - data/synthetic/synthetic_tasks.json
+
+  train_model:
+    cmd: python src/main.py train --config-path config/config.yaml
+    deps:
+      - src/main.py
+      - src/learning
+      - src/core
+      - config/config.yaml
+      - data/synthetic/synthetic_tasks.json
+    outs:
+      - models/best_model.pt
+    metrics:
+      - mlruns/latest_run/metrics/epoch_avg_policy_loss.json
+      - mlruns/latest_run/metrics/epoch_avg_value_loss.json
+
+  evaluate_model:
+    cmd: python src/main.py evaluate --model-path models/best_model.pt --dataset-path data/processed/eval_tasks.json --config-path config/config.yaml
+    deps:
+      - src/main.py
+      - src/inference
+      - src/core
+      - models/best_model.pt
+      - data/processed/eval_tasks.json
+      - config/config.yaml
+    metrics:
+      - mlruns/latest_run/metrics/attempt1_exact_match_rate.json
+      - mlruns/latest_run/metrics/attempt2_exact_match_rate.json
+
+  predict_submission:
+    cmd: python src/main.py predict --input-path data/raw/arc-dataset/evaluation_challenges.json --output-path submission.json --model-path models/best_model.pt --config-path config/config.yaml
+    deps:
+      - src/main.py
+      - src/inference
+      - src/core
+      - models/best_model.pt
+      - data/raw/arc-dataset/evaluation_challenges.json
+      - config/config.yaml
+    outs:
+      - submission.json
+
+  validate_submission:
+    cmd: python src/main.py validate --submission-path submission.json --challenges-path data/raw/arc-dataset/evaluation_challenges.json --config-path config/config.yaml
+    deps:
+      - src/main.py
+      - src/validation
+      - submission.json
+      - data/raw/arc-dataset/evaluation_challenges.json
+      - config/config.yaml

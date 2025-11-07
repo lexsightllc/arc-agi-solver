@@ -1,0 +1,65 @@
+# Configuration for the Solver Portfolio and Search Parameters
+
+solver:
+  search:
+    _target_: src.solver.search.MCTSSearch
+    num_simulations: 1000 # Max MCTS simulations per task
+    c_puct: 1.0 # Exploration constant
+    temperature: 1.0 # For policy sampling during search
+    max_depth: 10 # Max program length
+    rollout_budget: 50 # Max steps in a random rollout
+    mdl_weight: 0.1 # Weight for Minimum Description Length in reward
+
+  verifier:
+    _target_: src.solver.verifier.ProgramVerifier
+    strict_equality: true
+
+  constraints:
+    _target_: src.solver.constraints.ConstraintSolver
+    enable_color_invariants: true
+    enable_shape_invariants: true
+    enable_cardinality_invariants: true
+    z3_timeout_ms: 5000
+
+  repair:
+    _target_: src.solver.repair.ProgramRepairer
+    max_repair_attempts: 5
+    edit_types: ["argument_change", "primitive_swap", "add_primitive", "remove_primitive"]
+    repair_budget_per_attempt_ms: 1000
+
+  portfolio:
+    _target_: src.solver.portfolio.SolverPortfolio
+    solvers:
+      - name: "mcts_learned_prior"
+        strategy: "mcts"
+        policy_guided: true
+        prior_guided: true
+        mdl_enabled: true
+        constraints_enabled: true
+      - name: "mcts_symmetry_focused"
+        strategy: "mcts"
+        policy_guided: false
+        prior_guided: false
+        mdl_enabled: true
+        constraints_enabled: true
+        heuristics: ["symmetry_detection", "reflection_prior"]
+      - name: "mcts_counting_focused"
+        strategy: "mcts"
+        policy_guided: false
+        prior_guided: false
+        mdl_enabled: true
+        constraints_enabled: true
+        heuristics: ["object_counting", "color_frequency"]
+
+  inference_strategy:
+    attempt1:
+      solver_name: "mcts_learned_prior"
+      temperature: 0.01 # Near-deterministic
+      random_restarts: 0
+      strict_constraints: true
+    attempt2:
+      solver_name: "mcts_learned_prior" # Can be switched to another solver from portfolio
+      temperature: 0.5 # More diverse sampling
+      random_restarts: 3
+      strict_constraints: false # Allow some flexibility for diversity
+      fallback_solver_on_fail: "mcts_symmetry_focused"

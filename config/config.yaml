@@ -1,0 +1,47 @@
+defaults:
+  - _self_
+  - model: policy_net
+  - solver: search_params
+  - training: curriculum
+
+# Global settings
+seed: 42
+device: "cuda" # or "cpu"
+log_dir: "./logs"
+output_dir: "./outputs"
+
+# DVC settings
+dvc:
+  remote: "my_dvc_remote"
+
+# MLflow settings
+mlflow:
+  tracking_uri: "file:./mlruns"
+  experiment_name: "ARC_AGI_Solver"
+
+# Compute budget settings
+compute_budget:
+  inference_time_per_task_ms: 60000 # 60 seconds
+  node_expansion_budget: 100000 # Max MCTS node expansions
+  fallback_strategy: "return_best_partial" # Options: "return_best_partial", "return_empty_grid"
+
+# Preflight validation settings
+validation:
+  color_alphabet: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  max_grid_dim: 30
+
+# Interpretability settings
+interpretability:
+  render_intermediate_steps: true
+  log_invariant_firing: true
+
+# Paths
+data_path:
+  raw: "data/raw/arc-dataset"
+  processed: "data/processed"
+  synthetic: "data/synthetic"
+  models: "models"
+
+# Typer CLI configuration (not directly used by Hydra, but for documentation)
+cli:
+  commands: ["train", "evaluate", "predict", "validate", "interpret"]

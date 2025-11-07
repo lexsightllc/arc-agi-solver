@@ -1,0 +1,56 @@
+# Configuration for Training and Meta-Learning
+
+training:
+  trainer:
+    _target_: src.learning.trainer.CurriculumTrainer
+    epochs: 100
+    batch_size: 32
+    learning_rate: 0.001
+    optimizer: "Adam" # Options: "Adam", "SGD"
+    scheduler: "ReduceLROnPlateau"
+    gradient_clip_norm: 1.0
+    log_interval: 100 # Log every N batches
+    eval_interval: 5 # Evaluate every N epochs
+
+  curriculum:
+    _target_: src.learning.trainer.CurriculumManager
+    stages:
+      - name: "single_object_rules"
+        task_complexity_min: 1
+        task_complexity_max: 3
+        num_tasks_per_epoch: 1000
+        primitives_subset: ["paint", "copy", "reflect", "rotate"]
+        epochs: 30
+      - name: "multi_object_rules"
+        task_complexity_min: 2
+        task_complexity_max: 5
+        num_tasks_per_epoch: 2000
+        primitives_subset: ["paint", "copy", "reflect", "rotate", "flood_fill", "count"]
+        epochs: 40
+      - name: "relational_composition"
+        task_complexity_min: 3
+        task_complexity_max: 7
+        num_tasks_per_epoch: 3000
+        primitives_subset: ["paint", "copy", "reflect", "rotate", "flood_fill", "count", "compress", "relational_compose"]
+        epochs: 30
+
+  synthetic_generator:
+    _target_: src.learning.dataset.SyntheticARCProblemGenerator
+    grid_min_dim: 5
+    grid_max_dim: 15
+    max_objects: 5
+    max_operations: 7
+    augmentation:
+      enable_rotation: true
+      enable_reflection: true
+      enable_color_permutation: true
+
+  meta_learning:
+    prior_update_interval_epochs: 5
+    prior_distillation_interval_epochs: 10
+    prior_distillation_loss_weight: 0.5
+
+  evaluation:
+    zero_shot_tasks: true
+    sample_efficiency_tasks: [1, 3, 5] # Number of examples for few-shot evaluation
+    stability_perturbations: ["noise", "shift", "scale"]

@@ -1,0 +1,43 @@
+name: CI/CD Pipeline
+
+on: [push, pull_request]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-cov
+
+    - name: Run tests with coverage
+      run: |
+        pytest --cov=src --cov-report=xml
+
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        files: ./coverage.xml
+        fail_ci_if_error: true
+
+    - name: Build Docker image
+      run: |
+        docker build -t arc-agi-solver:latest .
+
+    - name: Run preflight validation (example)
+      run: |
+        # This step would typically run against a small, known valid dataset
+        # For CI, we might just check the script's ability to run.
+        # python src/main.py validate --submission-path tests/fixtures/sample_submission.json --challenges-path tests/fixtures/sample_challenges.json
+        echo "Preflight validation placeholder."

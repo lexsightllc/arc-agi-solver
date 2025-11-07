@@ -1,0 +1,30 @@
+# Configuration for the Policy and Value Networks
+
+model:
+  policy_net:
+    _target_: src.learning.models.PolicyNet
+    input_channels: 10 # 10 colors + 1 for background
+    hidden_dim: 256
+    num_layers: 4
+    output_dim: 128 # Placeholder, actual output depends on DSL size
+    dropout: 0.1
+    architecture: "resnet_transformer" # Options: "cnn", "transformer", "resnet_transformer"
+
+  value_net:
+    _target_: src.learning.models.ValueNet
+    input_channels: 10
+    hidden_dim: 256
+    num_layers: 4
+    output_dim: 1 # Predicts a scalar value
+    architecture: "cnn"
+
+  program_prior:
+    _target_: src.learning.prior.ProgramPrior
+    prior_type: "neural" # Options: "frequency", "neural"
+    neural_prior_model:
+      _target_: src.learning.models.ProgramPriorModel # A small NN for prior
+      input_dim: 128 # Matches policy_net output
+      hidden_dim: 64
+      output_dim: 1 # Logit for program likelihood
+
+  embedding_dim: 64 # For DSL primitives and grid features
