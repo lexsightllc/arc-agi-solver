@@ -1,5 +1,5 @@
 from z3 import Solver, Int, And, Or, Distinct, If, sat, unsat
-from typing import List, Dict, Any, Tuple, Optional
+from typing import List, Dict, Any, Tuple, Optional, Type
 from src.core.grid import ARCGrid
 from src.core.dsl import Program
 from src.core.ir import ARCIntermediateRepresentation
