@@ -1,15 +1,16 @@
+# SPDX-License-Identifier: MPL-2.0
 [project]
 name = "arc-agi-solver"
 version = "0.1.0"
 description = "A neuro-symbolic program induction system for ARC AGI tasks."
 authors = [{ name = "ARC AGI Team", email = "arc-agi@example.com" }]
-license = { file = "LICENSE" }
+license = { text = "MPL-2.0" }
 readme = "README.md"
 requires-python = ">=3.9"
 keywords = ["ARC", "AGI", "neuro-symbolic", "program induction", "PyTorch", "Z3"]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
     "Operating System :: OS Independent",
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering :: Artificial Intelligence"

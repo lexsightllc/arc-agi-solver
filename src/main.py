@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MPL-2.0
 import typer
 import hydra
 from omegaconf import DictConfig, OmegaConf

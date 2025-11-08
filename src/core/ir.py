@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MPL-2.0
 import numpy as np
 import networkx as nx
 from typing import List, Tuple, Dict, Any, Optional

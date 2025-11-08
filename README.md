@@ -1,3 +1,4 @@
+<!-- SPDX-License-Identifier: MPL-2.0 -->
 # ARC AGI Solver
 
 This project implements a neuro-symbolic program induction system designed to solve tasks from the Abstraction and Reasoning Corpus (ARC) AGI challenge. It aims to substantially advance beyond heuristic pattern matching by learning to invent and select compact grid transformation programs that generalize to unseen tasks.
@@ -120,3 +121,13 @@ This system is designed to achieve substantial zero-shot generalization, aiming 
 **Scientific Novelty:**
 
 This design's novelty lies in its tightly integrated neuro-symbolic architecture, where a learned policy guides a symbolic search over a compositional DSL, with robust constraint satisfaction and a self-repair mechanism. The learned prior, updated through meta-learning on synthetic tasks, allows for efficient generalization without relying on evaluation tasks. This approach enables the system to *invent* and *verify* programs, fostering transferability to new problems by learning underlying compositional structures rather than merely memorizing known patterns.
+
+## License
+
+The ARC AGI Solver is available under the [Mozilla Public License 2.0](LICENSE). Any file distributed under the MPL-2.0 must retain its license header, and if you distribute modified versions of MPL-covered files, you must make those modifications available under MPL-2.0 as well. Larger works that merely aggregate or interface with this project may remain under their own licenses, provided the MPL terms continue to be satisfied.
+
+All distribution artifacts must include the accompanying [NOTICE](NOTICE) file so that third-party acknowledgments remain intact.
+
+## Credits
+
+ProjectName © 2025 Augusto "Guto" Ochoa Ughini. The project builds upon a vibrant open-source ecosystem; please consult the dependency metadata for upstream acknowledgments and licensing details.

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: MPL-2.0
+
 """End-to-end Kaggle-style execution script for the ARC AGI Solver project.
 
 This script orchestrates training, evaluation, prediction, validation, and

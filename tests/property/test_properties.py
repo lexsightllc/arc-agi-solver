@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MPL-2.0
 import pytest
 from hypothesis import given, strategies as st, settings
 import numpy as np

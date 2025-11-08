@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MPL-2.0
 from z3 import Solver, Int, And, Or, Distinct, If, sat, unsat
 from typing import List, Dict, Any, Tuple, Optional, Type
 from src.core.grid import ARCGrid

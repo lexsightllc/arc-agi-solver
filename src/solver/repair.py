@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MPL-2.0
 import random
 from typing import List, Dict, Any, Optional
 from src.core.grid import ARCGrid
