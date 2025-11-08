@@ -1,12 +1,22 @@
-import os
+import argparse
 import json
+import logging
+import os
 from typing import Any, Dict, Tuple
-from src.utils.logging import get_logger
 
-logger = get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 def load_arc_dataset(path: str) -> Dict[str, Any]:
-    """Loads ARC dataset from a given directory."""
+    """Loads ARC dataset from a given directory.
+
+    If the directory does not exist (e.g. optional competition data on Kaggle),
+    an empty dataset is returned so callers can safely proceed.
+    """
+
+    if not os.path.isdir(path):
+        logger.warning("ARC dataset path '%s' does not exist. Returning empty dataset.", path)
+        return {}
+
     dataset = {}
     for filename in os.listdir(path):
         if filename.endswith(".json"):
@@ -55,4 +65,5 @@ def main():
     logger.info(f"Evaluation tasks saved to {eval_output_path}")
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     main()
