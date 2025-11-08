@@ -26,3 +26,10 @@ contribution under the same license.
 
 We appreciate every improvement, from typo fixes to major features. Thank you
 for helping strengthen the ARC AGI Solver!
+
+## Sharing Diffs Efficiently
+
+When you reference code changes in issues or discussions, append `.patch` or
+`.diff` to the end of a GitHub pull request or commit URL to view the
+machine-readable plaintext diff. This makes it easy for reviewers to download
+or apply your changes locally with standard Git tooling.
