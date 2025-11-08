@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MPL-2.0
 import torch
 from torch.utils.data import Dataset
 import numpy as np

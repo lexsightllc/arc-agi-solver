@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MPL-2.0
 import pytest
 import numpy as np
 from src.core.grid import ARCGrid

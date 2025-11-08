@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MPL-2.0
 import torch
 import torch.nn as nn
 from typing import List, Dict, Any

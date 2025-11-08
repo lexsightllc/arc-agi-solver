@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MPL-2.0
 import torch
 import numpy as np
 import random

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MPL-2.0
 from src.core.grid import ARCGrid
 from src.core.dsl import Program
 from typing import List, Dict, Any

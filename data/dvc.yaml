@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MPL-2.0
 stages:
   prepare_data:
     cmd: python src/data/prepare_data.py --raw_path data/raw/arc-dataset --processed_path data/processed

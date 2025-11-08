@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MPL-2.0
 import pytest
 from src.core.grid import ARCGrid
 from src.core.dsl import DSL, Program, ProgramStep, Paint, Rotate

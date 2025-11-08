@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MPL-2.0
 FROM python:3.9-slim-buster
 
 WORKDIR /app

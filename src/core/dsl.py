@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MPL-2.0
 from abc import ABC, abstractmethod
 from typing import List, Tuple, Any, Dict, Type, Callable
 from src.core.grid import ARCGrid

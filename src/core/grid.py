@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MPL-2.0
 import numpy as np
 from numba import njit, prange
 from typing import List, Tuple, Optional, Dict

@@ -1,0 +1,8 @@
+SPDX-License-Identifier: MPL-2.0
+
+ProjectName © 2025 Augusto 'Guto' Ochoa Ughini
+
+This distribution currently does not bundle third-party source code. Runtime
+and build-time dependencies are obtained from external package managers and
+are distributed under their respective licenses. Refer to requirements.txt and
+pyproject.toml for dependency listings.
