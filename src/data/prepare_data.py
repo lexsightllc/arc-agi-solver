@@ -1,9 +1,10 @@
-import os
+import argparse
 import json
+import logging
+import os
 from typing import Any, Dict, Tuple
-from src.utils.logging import get_logger
 
-logger = get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 def load_arc_dataset(path: str) -> Dict[str, Any]:
     """Loads ARC dataset from a given directory.
@@ -64,4 +65,5 @@ def main():
     logger.info(f"Evaluation tasks saved to {eval_output_path}")
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     main()
