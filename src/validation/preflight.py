@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: MPL-2.0
 import json
+import os
+from pathlib import Path
 from typing import List, Dict, Any
 from src.core.grid import ARCGrid
 from src.utils.logging import get_logger
@@ -11,22 +13,51 @@ class PreflightValidator:
     """Validates submission files against schema, task coverage, and grid constraints."""
     def __init__(self, cfg: DictConfig):
         self.cfg = cfg
+
+        # Validate configuration
+        if not hasattr(cfg, 'validation'):
+            raise ValueError("Missing 'validation' section in config")
+        if not hasattr(cfg.validation, 'color_alphabet'):
+            raise ValueError("Missing 'validation.color_alphabet' in config")
+        if not hasattr(cfg.validation, 'max_grid_dim'):
+            raise ValueError("Missing 'validation.max_grid_dim' in config")
+
         self.color_alphabet = set(cfg.validation.color_alphabet)
         self.max_grid_dim = cfg.validation.max_grid_dim
+
+        if self.max_grid_dim <= 0:
+            raise ValueError(f"max_grid_dim must be positive, got {self.max_grid_dim}")
 
     def validate_submission(self, submission_path: str, challenges_path: str) -> bool:
         """Performs all preflight checks on a submission file."""
         logger.info(f"Starting preflight validation for {submission_path} against {challenges_path}")
+
+        # Validate paths exist and are readable
+        for path_str, name in [(submission_path, "submission"), (challenges_path, "challenges")]:
+            path = Path(path_str)
+            if not path.exists():
+                logger.error(f"{name.capitalize()} file not found: {path}")
+                return False
+            if not path.is_file():
+                logger.error(f"{name.capitalize()} path is not a file: {path}")
+                return False
+            if not os.access(path, os.R_OK):
+                logger.error(f"{name.capitalize()} file not readable: {path}")
+                return False
+
         try:
-            with open(submission_path, 'r') as f:
+            with open(submission_path, 'r', encoding='utf-8') as f:
                 submission = json.load(f)
-            with open(challenges_path, 'r') as f:
+            with open(challenges_path, 'r', encoding='utf-8') as f:
                 challenges = json.load(f)
         except json.JSONDecodeError as e:
-            logger.error(f"Invalid JSON format for submission or challenges file: {e}")
+            logger.error(f"Invalid JSON format: {e}")
             return False
-        except FileNotFoundError as e:
-            logger.error(f"File not found: {e}")
+        except PermissionError as e:
+            logger.error(f"Permission denied: {e}")
+            return False
+        except OSError as e:
+            logger.error(f"OS error reading file: {e}")
             return False
 
         if not self._check_task_coverage(submission, challenges):

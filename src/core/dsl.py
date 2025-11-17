@@ -41,6 +41,16 @@ class Primitive(ABC):
 
 
 class Paint(Primitive):
+    """Paints a single pixel at specified coordinates with a color.
+
+    Args:
+        r: Row coordinate (0-indexed)
+        c: Column coordinate (0-indexed)
+        color: Color value (0-9 for ARC)
+
+    Returns:
+        ARCGrid with the specified pixel painted
+    """
     name = "paint"
     arg_types = {"r": int, "c": int, "color": int}
 
@@ -48,6 +58,18 @@ class Paint(Primitive):
         return grid.set_pixel(r, c, color)
 
 class PaintRectangle(Primitive):
+    """Paints a rectangular region with a specified color.
+
+    Args:
+        r_start: Starting row coordinate (inclusive)
+        c_start: Starting column coordinate (inclusive)
+        r_end: Ending row coordinate (exclusive)
+        c_end: Ending column coordinate (exclusive)
+        color: Color value (0-9 for ARC)
+
+    Returns:
+        ARCGrid with the rectangle painted
+    """
     name = "paint_rectangle"
     arg_types = {"r_start": int, "c_start": int, "r_end": int, "c_end": int, "color": int}
 
@@ -55,6 +77,16 @@ class PaintRectangle(Primitive):
         return grid.paint_rectangle(r_start, c_start, r_end, c_end, color)
 
 class Copy(Primitive):
+    """Copies a source grid onto the current grid at specified offset.
+
+    Args:
+        source_grid: The grid to copy from
+        r_offset: Row offset for placement
+        c_offset: Column offset for placement
+
+    Returns:
+        ARCGrid with source grid overlaid
+    """
     name = "copy"
     arg_types = {"source_grid": ARCGrid, "r_offset": int, "c_offset": int}
 
@@ -62,6 +94,14 @@ class Copy(Primitive):
         return grid.overlay(source_grid, r_offset, c_offset)
 
 class Rotate(Primitive):
+    """Rotates the grid by k * 90 degrees clockwise.
+
+    Args:
+        k: Number of 90-degree rotations (1=90°, 2=180°, 3=270°)
+
+    Returns:
+        Rotated ARCGrid
+    """
     name = "rotate"
     arg_types = {"k": int}
 
@@ -69,6 +109,11 @@ class Rotate(Primitive):
         return grid.rotate(k)
 
 class ReflectHorizontal(Primitive):
+    """Reflects the grid horizontally (left-right flip).
+
+    Returns:
+        Horizontally reflected ARCGrid
+    """
     name = "reflect_horizontal"
     arg_types = {}
 
@@ -76,6 +121,11 @@ class ReflectHorizontal(Primitive):
         return grid.reflect_horizontal()
 
 class ReflectVertical(Primitive):
+    """Reflects the grid vertically (top-bottom flip).
+
+    Returns:
+        Vertically reflected ARCGrid
+    """
     name = "reflect_vertical"
     arg_types = {}
 
@@ -83,6 +133,16 @@ class ReflectVertical(Primitive):
         return grid.reflect_vertical()
 
 class FloodFill(Primitive):
+    """Performs flood fill starting from a position with a replacement color.
+
+    Args:
+        r: Starting row coordinate
+        c: Starting column coordinate
+        replacement_color: Color to fill with (0-9 for ARC)
+
+    Returns:
+        ARCGrid with flood fill applied
+    """
     name = "flood_fill"
     arg_types = {"r": int, "c": int, "replacement_color": int}
 
@@ -90,11 +150,21 @@ class FloodFill(Primitive):
         return grid.flood_fill(r, c, replacement_color)
 
 class CountColor(Primitive):
+    """Counts the number of pixels with a specific color.
+
+    Note: This primitive returns an int, not a grid.
+          Special handling needed in Program execution.
+
+    Args:
+        color: Color to count (0-9 for ARC)
+
+    Returns:
+        Integer count of pixels with the specified color
+    """
     name = "count_color"
     arg_types = {"color": int}
 
     def apply(self, grid: ARCGrid, color: int) -> int:
-        """This primitive returns an int, not a grid. Special handling needed in Program execution."""
         return grid.count_color(color)
 
 class Compress(Primitive):
