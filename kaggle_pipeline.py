@@ -66,9 +66,29 @@ def debug(msg: str) -> None:
 
 
 def run_command(cmd: List[str], cwd: Path, env: Dict[str, str]) -> None:
-    """Execute a subprocess command, streaming stdout/stderr to the notebook."""
+    """Execute a subprocess command with validation, streaming stdout/stderr to the notebook."""
+    # Validate command is from allowed list
+    allowed_executables = {sys.executable, 'python', 'python3'}
+    executable = Path(cmd[0]).name
+    if executable not in allowed_executables and not cmd[0].startswith(str(cwd)):
+        raise ValueError(f"Executable '{cmd[0]}' not in allowed list")
+
     debug(f"Running command: {' '.join(cmd)} (cwd={cwd})")
-    result = subprocess.run(cmd, cwd=str(cwd), env=env)
+    result = subprocess.run(
+        cmd,
+        cwd=str(cwd),
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False
+    )
+
+    # Log output for debugging
+    if result.stdout:
+        debug(f"Command stdout: {result.stdout}")
+    if result.stderr:
+        debug(f"Command stderr: {result.stderr}")
+
     if result.returncode != 0:
         raise RuntimeError(
             f"Command {' '.join(cmd)} failed with exit code {result.returncode}"
@@ -98,6 +118,17 @@ def collect_arc_tasks(
     dataset_root: Path, split: str, limit: int, destination: Path
 ) -> Tuple[Path, List[str]]:
     """Aggregate a few ARC tasks into a single JSON file for fast demos."""
+    # Sanitize split parameter to prevent path traversal
+    if not split.replace('_', '').isalnum():
+        raise ValueError(f"Invalid split name: {split}. Must be alphanumeric.")
+
+    # Ensure destination is within expected directory
+    try:
+        destination.resolve().relative_to(Path.cwd())
+    except ValueError:
+        # Allow but log warning for paths outside CWD
+        debug(f"Warning: Destination path {destination} is outside working directory")
+
     split_dir = dataset_root / split
     if not split_dir.exists():
         raise FileNotFoundError(f"ARC dataset split '{split}' missing at {split_dir}")

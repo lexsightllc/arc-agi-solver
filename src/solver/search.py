@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: MPL-2.0
 import torch
+import torch.nn.functional as F
 import numpy as np
 import time
 from typing import List, Tuple, Dict, Any, Optional
@@ -12,6 +13,7 @@ from src.learning.models import PolicyNet, ValueNet
 from src.learning.prior import ProgramPrior
 from src.solver.verifier import ProgramVerifier
 from src.solver.constraints import ConstraintSolver
+from src.solver.utils import generate_random_args
 from src.utils.logging import get_logger
 
 logger = get_logger(__name__)
@@ -98,7 +100,7 @@ class MCTSSearch:
             primitive_instance = primitive_cls()
             # Generate arguments (this is a critical and complex part)
             # For now, generate random valid arguments. In a real system, arg_logits would guide this.
-            args = self._generate_random_args(primitive_instance, node.grid)
+            args = generate_random_args(primitive_instance, node.grid, self.primitive_names)
             possible_actions.append((primitive_instance, args))
 
         node.policy_probs = {}
@@ -130,41 +132,6 @@ class MCTSSearch:
         if not node.children: # If no valid children, it's a terminal node
             node.is_terminal = True
 
-    def _generate_random_args(self, primitive: Primitive, current_grid: ARCGrid) -> Dict[str, Any]:
-        """Generates random but valid arguments for a primitive based on current grid state."""
-        args = {}
-        for arg_name, arg_type in primitive.arg_types.items():
-            if arg_type == int:
-                if arg_name == "color" or arg_name == "replacement_color":
-                    args[arg_name] = np.random.randint(0, 10) # ARC colors 0-9
-                elif arg_name in ["r", "r_start", "r_end"]:
-                    args[arg_name] = np.random.randint(0, current_grid.height)
-                elif arg_name in ["c", "c_start", "c_end"]:
-                    args[arg_name] = np.random.randint(0, current_grid.width)
-                elif arg_name == "k": # For rotation
-                    args[arg_name] = np.random.choice([1, 2, 3]) # 90, 180, 270 degrees
-                else:
-                    args[arg_name] = np.random.randint(0, 5) # Default small int
-            elif arg_type == ARCGrid:
-                # For 'copy' primitive, generate a small source grid
-                source_h = np.random.randint(1, min(current_grid.height, 5))
-                source_w = np.random.randint(1, min(current_grid.width, 5))
-                args[arg_name] = ARCGrid(np.random.randint(0, 10, size=(source_h, source_w), dtype=np.uint8))
-            elif arg_type == str:
-                if arg_name == "relation":
-                    args[arg_name] = np.random.choice(["align_top_left", "overlap_center"])
-                elif arg_name in ["op1", "op2"]:
-                    args[arg_name] = np.random.choice(self.primitive_names) # Simplified, should be sub-programs
-
-        # Ensure r_start < r_end, c_start < c_end for PaintRectangle
-        if primitive.name == "paint_rectangle":
-            if "r_start" in args and "r_end" in args and args["r_start"] >= args["r_end"]:
-                args["r_end"] = args["r_start"] + 1
-            if "c_start" in args and "c_end" in args and args["c_start"] >= args["c_end"]:
-                args["c_end"] = args["c_start"] + 1
-
-        return args
-
     def _simulate_rollout(self, node: SearchNode, task_input_grid: ARCGrid, task_output_grid: ARCGrid) -> float:
         """Performs a random rollout from the current node to estimate value."""
         current_grid = node.grid.copy()
@@ -177,7 +144,7 @@ class MCTSSearch:
             # Randomly pick a primitive and generate random args
             primitive_cls = np.random.choice(self.all_primitives)
             primitive_instance = primitive_cls()
-            args = self._generate_random_args(primitive_instance, current_grid)
+            args = generate_random_args(primitive_instance, current_grid, self.primitive_names)
 
             try:
                 next_grid_output = primitive_instance.apply(current_grid, **args)

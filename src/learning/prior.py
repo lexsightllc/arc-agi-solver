@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: MPL-2.0
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from typing import List, Dict, Any
 from src.core.dsl import Program, DSL
 from src.learning.models import ProgramPriorModel

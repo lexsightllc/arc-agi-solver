@@ -5,6 +5,7 @@ from src.core.grid import ARCGrid
 from src.core.dsl import DSL, Program, ProgramStep, Primitive
 from src.solver.verifier import ProgramVerifier
 from src.solver.constraints import ConstraintSolver
+from src.solver.utils import generate_random_args
 from src.utils.logging import get_logger
 
 logger = get_logger(__name__)
@@ -92,7 +93,9 @@ class ProgramRepairer:
         # A proper implementation would execute up to insert_idx.
         current_grid_at_insert = task_input_grid # Simplified
         try:
-            args = self.constraint_solver._generate_random_args(primitive_instance, current_grid_at_insert) # Re-using internal method
+            # Get primitive names from DSL
+            primitive_names = self.dsl.get_primitive_names()
+            args = generate_random_args(primitive_instance, current_grid_at_insert, primitive_names)
             new_step = ProgramStep(primitive_instance, args)
             new_steps = list(program.steps)
             new_steps.insert(insert_idx, new_step)

@@ -3,6 +3,7 @@ import typer
 import hydra
 from omegaconf import DictConfig, OmegaConf
 import os
+from pathlib import Path
 import mlflow
 
 from src.utils.seed import set_deterministic_seed
@@ -14,6 +15,40 @@ from src.utils.visualization import visualize_program_execution
 
 logger = get_logger(__name__)
 app = typer.Typer()
+
+def validate_file_path(path: str, must_exist: bool = True, path_type: str = "file") -> Path:
+    """Validate file path is safe and optionally exists.
+
+    Args:
+        path: The file path to validate
+        must_exist: Whether the file must exist
+        path_type: Type of path - 'file' or 'directory'
+
+    Returns:
+        Validated Path object
+
+    Raises:
+        FileNotFoundError: If file doesn't exist when must_exist=True
+        ValueError: If path is invalid
+    """
+    file_path = Path(path).resolve()
+
+    # Check path doesn't traverse outside expected directories (allow but warn)
+    try:
+        file_path.relative_to(Path.cwd())
+    except ValueError:
+        # Allow absolute paths but log warning
+        logger.warning(f"Using absolute path outside CWD: {file_path}")
+
+    if must_exist:
+        if not file_path.exists():
+            raise FileNotFoundError(f"{path_type.capitalize()} not found: {file_path}")
+        if path_type == "file" and not file_path.is_file():
+            raise ValueError(f"Path is not a file: {file_path}")
+        if path_type == "directory" and not file_path.is_dir():
+            raise ValueError(f"Path is not a directory: {file_path}")
+
+    return file_path
 
 @app.command()
 def train(
@@ -57,12 +92,20 @@ def evaluate(
     with mlflow.start_run(experiment_id=mlflow.set_experiment(cfg.mlflow.experiment_name)) as run:
         mlflow.log_params({"evaluation_model_path": model_path, "evaluation_dataset_path": dataset_path})
 
-        predictor: ARCPredictor = hydra.utils.instantiate(cfg.inference.predictor, cfg=cfg, model_path=model_path)
+        # Validate paths
+        validated_model_path = validate_file_path(model_path, must_exist=True)
+        validated_dataset_path = validate_file_path(dataset_path, must_exist=True)
+
+        predictor: ARCPredictor = hydra.utils.instantiate(cfg.inference.predictor, cfg=cfg, model_path=str(validated_model_path))
         # Load evaluation tasks from dataset_path
         # For simplicity, assume dataset_path points to a JSON file of ARC tasks
         import json
-        with open(dataset_path, 'r') as f:
-            evaluation_tasks = json.load(f)
+        try:
+            with open(validated_dataset_path, 'r', encoding='utf-8') as f:
+                evaluation_tasks = json.load(f)
+        except json.JSONDecodeError as e:
+            logger.error(f"Invalid JSON in dataset file: {e}")
+            raise ValueError(f"Invalid JSON format in {validated_dataset_path}")
 
         results = predictor.evaluate(evaluation_tasks)
         logger.info(f"Evaluation results: {results}")
